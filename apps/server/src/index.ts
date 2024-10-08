@@ -9,14 +9,14 @@ const socketService = new SocketService(); // yk
  const httpServer = http.createServer(); 
  const PORT = process.env.PORT? process.env.PORT:8000; 
 
-socketService.io.attach(httpServer); // attach madadhu http server ge
+socketService.io.attach(httpServer); 
 
 
 httpServer.listen(PORT, () => {
     console.log(`HTTP server started at PORT: ${PORT}`);
 });
 
-socketService.initListeners(); // adhe socket listeners idhu 
+socketService.initListeners(); 
 
 }
 

@@ -1,4 +1,8 @@
 import { Server } from 'socket.io'; 
+import Redis from 'ioredis';
+
+// 2 connections from redis : one for publishing messages and one for subscribing to messages
+// pubsub in scale chatapp
 
 
 class SocketService { 
@@ -11,25 +15,35 @@ class SocketService {
                 allowedHeaders: ["*"], 
                 origin: "*",
             }
-            // ellaanu allow madutthe 
+      
         });
+        sub.subscribe("MESSAGES");
     }
 
 
     public initListeners() {
         const io = this.io; 
-        console.log("Initializing socket listeners..."); // namge gothagutthe everything is working good 
+        console.log("Initializing socket listeners..."); 
         io.on("connect", (socket) => { 
             console.log(`New Socket connected`, socket.id);
 
             socket.on('event:message', async ({message}: {message: string}) => {
-                // name client event emit madthare i.e, message 
-                      // message na destructure madadhu , adhu string antha 
-              console.log("new message ", message); 
-              // adhe message na console log madadh aste 
-      
+
+                console.log("new message ", message); 
+
+                await pub.publish("MESSAGES", JSON.stringify({message}));
+  
+            });
         });
-    });
+
+        // whenever message comes , which channel gets which messages 
+        sub.on('message', (channel, message) => {
+            if (channel === "MESSAGES") {
+              console.log("new message from redis", message); // for scale 
+                io.emit("message", message);
+            }
+        // when message comes on the channel , all clients should get the message
+        });
     }
 
     get io() { 
@@ -38,8 +52,5 @@ class SocketService {
 }
 
 
-// when a client connect aadhaga , illi nav a client na handle madthivi
 
-
-
-export default  SocketService;
+export default SocketService;
