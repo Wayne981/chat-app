@@ -6,8 +6,15 @@ class SocketService {
 
     constructor() {  
         console.log("Initializing socket service...");
-        this._io = new Server();
+        this._io = new Server({
+            cors: { 
+                allowedHeaders: ["*"], 
+                origin: "*",
+            }
+            // ellaanu allow madutthe 
+        });
     }
+
 
     public initListeners() {
         const io = this.io; 
